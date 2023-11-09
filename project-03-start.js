@@ -104,17 +104,44 @@ const Utils = {
         /* TODO: Filter the videos based on the selected video length
 
         */
-        
+       filteredVideos = Utils.filterByVideoLength(filteredVideos, videoLength);
+        console.log('before for each - filter by video length');
+
+        //console.log(filteredVideos.length);
+        if(filteredVideos.length <= 0 ) {
+            const h = document.createElement('header');
+            h.textContent = "There are no results that match this criteria.";
+            document.querySelector('#itemListVideos').appendChild(h);
+        }
+
         filteredVideos.forEach(video => {
             const li = document.createElement('li');
             li.textContent = `${video.videoTitle} (Published on: ${video.publishDate})`;
             document.getElementById('itemListVideos').appendChild(li);
+        });
+
+        
+    },
+
+
+
+
+    displayFeaturedVideos: function(el, videos) {
+        const itemList = document.querySelector(el);
+        const header = document.createElement('h3');
+        header.textContent = "Videos";
+        itemList.appendChild(header);
+        videos.forEach(video => {
+            const li = document.createElement('li');
+            li.textContent = `${video.videoTitle} (Published on: ${video.publishDate})`;
+            itemList.appendChild(li);
         });
     },
 
     clearItemList: function() {        
         const itemList = document.getElementById('itemListVideos');
         itemList.innerHTML = '';
+        console.log("clearing list");
     },
 
     getSelectedVideoLength: function(el) {
@@ -129,6 +156,12 @@ const Utils = {
     - HINT: this should return a number, not a string
 
     */
+
+    getVideoDuration: function(video){
+        return parseInt( video.videoLength.split(':')[0] );
+    },
+
+
     
     /* TODO: Define a method to filter videos based on their length
     - call this method filterByVideoLength
@@ -138,7 +171,13 @@ const Utils = {
     Note: this video will make use of the getselectedVideoLength, provided for you, and getVideoDuration, which you will be working on
 
     */
-
+    filterByVideoLength: function(videoList, lengthCriteria){
+        const filteredVideos = videoList.filter(
+            video => Utils.matchesVideoLengthCriteria(  Utils.getVideoDuration(video), lengthCriteria)
+        );
+        console.log(filteredVideos);   
+        return filteredVideos;
+    },
 
 
     
@@ -154,6 +193,19 @@ const Utils = {
     - consider what type of conditional logic is best suited for this. There is a finite list.
 
     */
+
+    matchesVideoLengthCriteria: function(videoLength, strLengthCriteria) { 
+        switch(strLengthCriteria){
+            case "short":
+                return videoLength < 1;
+            case "medium":
+                return  videoLength >= 1 && videoLength <= 5;
+            case "long":
+                return videoLength > 5;
+            default:
+                return false;
+        }
+    },
     
     displayAllVideos: function(el) {
         Utils.clearItemList();
@@ -173,5 +225,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     Utils.displayAllVideos('#itemListVideos');
 });
-
 
